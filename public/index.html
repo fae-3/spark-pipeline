@@ -182,7 +182,7 @@ async function go() {
     if(!db) throw new Error("Spark Studio database not found.");
     const pages=await allPgs(db.id);
     const nl=name.toLowerCase(),nf2=name.split(' ')[0].toLowerCase(),nl2=name.split(' ').slice(-1)[0].toLowerCase();
-    const aP=[],tlI=[];
+    const aP=[],tlI=[],shippedIds=new Set();
 
     for(const page of pages) {
       const pr=page.properties||{};
@@ -193,6 +193,7 @@ async function go() {
       const tdd=gp(pr['Task Due Date']||pr['Task due date']||pr['task_due_date']||null);
       const stat=gp(pr['Status']||pr['status']||null);
       const rdy=gp(pr['Ready']||pr['ready']||null);
+      if(stat.toLowerCase()==='shipped') { shippedIds.add(page.id); continue; }
       if(asgn.includes(nl)||asgn.includes(nf2)||asgn.includes(nl2))
         aP.push({id:page.id,url:page.url,name:title,pub,tdd,stat,rdy});
     }
@@ -217,7 +218,7 @@ async function go() {
             if(mn){
               const dm=text.match(/(\d{1,2})\/(\d{1,2})(?:\/\d{2,4})?/);
               const tm=text.match(/^([^:]+):/);
-              tlI.push({id:page.id,url:page.url,name:title,task:tm?tm[1].trim():'Task',dateStr:dm?dm[0]:''});
+              if(!shippedIds.has(page.id))tlI.push({id:page.id,url:page.url,name:title,task:tm?tm[1].trim():'Task',dateStr:dm?dm[0]:''});
             }
           }
         }
