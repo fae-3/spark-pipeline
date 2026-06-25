@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Pipeline — Spark Studio</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #ffffff;
+    --bg-secondary: #f7f6f3;
+    --bg-tertiary: #f0ede8;
+    --text: #1a1a1a;
+    --text-secondary: #6b6860;
+    --text-tertiary: #9e9b96;
+    --border: rgba(0,0,0,0.1);
+    --border-mid: rgba(0,0,0,0.15);
+    --accent: #e8623a;
+    --accent-bg: #fdf1ec;
+    --accent-text: #b8401e;
+    --blue-bg: #edf3fc;
+    --blue-text: #1a4fa0;
+    --green-bg: #edf7f0;
+    --green-text: #1a6b38;
+    --amber-bg: #fef8ec;
+    --amber-text: #8a5c0a;
+    --red-bg: #fef0ee;
+    --red-text: #a32020;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1f1e1c;
+      --bg-secondary: #2a2927;
+      --bg-tertiary: #323028;
+      --text: #f0ede8;
+      --text-secondary: #9e9b96;
+      --text-tertiary: #6b6860;
+      --border: rgba(255,255,255,0.1);
+      --border-mid: rgba(255,255,255,0.15);
+      --accent-bg: #2e1a12;
+      --accent-text: #f0956a;
+      --blue-bg: #0e1e38;
+      --blue-text: #7aabf0;
+      --green-bg: #0d2318;
+      --green-text: #6bcf91;
+      --amber-bg: #2a1c06;
+      --amber-text: #f0c060;
+      --red-bg: #2a0e0e;
+      --red-text: #f08080;
+    }
+  }
+
+  html, body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .top-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 2rem;
+  }
+
+  .crab { font-size: 22px; }
+
+  .top-bar h1 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  .top-bar span {
+    font-size: 13px;
+    color: var(--text-tertiary);
+  }
+
+  .name-card {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .name-card p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    height: 36px;
+    padding: 0 12px;
+    border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(232,98,58,0.12);
+  }
+
+  input[type="text"]::placeholder {
+    color: var(--text-tertiary);
+  }
+
+  button {
+    height: 36px;
+    padding: 0 16px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.15s;
+  }
+
+  button:hover { opacity: 0.88; }
+  button:active { opacity: 0.78; transform: scale(0.98); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-ghost {
+    background: none;
+    border: 0.5px solid var(--border-mid);
+    color: var(--text-secondary);
+    font-size: 12px;
+    height: 30px;
+    padding: 0 12px;
+  }
+
+  .btn-ghost:hover { background: var(--bg-secondary); opacity: 1; }
+
+  .loading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 2rem 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+  }
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--border-mid);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-box {
+    background: var(--red-bg);
+    color: var(--red-text);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+
+  .results-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .results-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .results-header p {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-top: 2px;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+  }
+
+  .stat-num {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 1px;
+  }
+
+  .section-head {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin: 1.5rem 0 0.6rem;
+  }
+
+  .section-head:first-of-type { margin-top: 0; }
+
+  .ticket {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    margin-bottom: 6px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.12s, background 0.12s;
+  }
+
+  .ticket:hover {
+    border-color: var(--border-mid);
+    background: var(--bg-secondary);
+  }
+
+  .date-block {
+    min-width: 64px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .date-pub {
+    font-size: 11px;
+    color: var(--text-tertiary);
+  }
+
+  .date-due {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 1px;
+  }
+
+  .date-due.overdue { color: var(--red-text); }
+  .date-due.soon { color: var(--amber-text); }
+
+  .date-rel {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 1px;
+  }
+
+  .date-rel.overdue { color: var(--red-text); }
+  .date-rel.soon { color: var(--amber-text); }
+
+  .vr {
+    width: 1px;
+    background: var(--border);
+    align-self: stretch;
+    flex-shrink: 0;
+  }
+
+  .ticket-body { flex: 1; min-width: 0; }
+
+  .ticket-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ticket-stage {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  .timeline-tasks { margin-top: 6px; }
+
+  .tl-item {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 3px;
+  }
+
+  .tl-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 999px;
+    margin-top: 6px;
+  }
+
+  .badge-assigned { background: var(--blue-bg); color: var(--blue-text); }
+  .badge-timeline { background: var(--green-bg); color: var(--green-text); }
+
+  .ext-link {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    text-decoration: none;
+    flex-shrink: 0;
+    align-self: center;
+    padding: 4px;
+    border-radius: 4px;
+    transition: color 0.12s;
+  }
+
+  .ext-link:hover { color: var(--accent); }
+
+  .empty {
+    padding: 2rem 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 480px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .date-block { min-width: 50px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top-bar">
+    <span class="crab">🦀</span>
+    <h1>Spark Studio</h1>
+    <span>/ My Pipeline</span>
+  </div>
+
+  <div id="name-screen">
+    <div class="name-card">
+      <p>Enter your name exactly as it appears in Notion to see your active assignments and upcoming timeline deadlines.</p>
+      <div class="input-row">
+        <input type="text" id="name-input" placeholder="e.g. Hayley Igarashi" autocomplete="off" />
+        <button onclick="loadPipeline()" id="load-btn">Load my pipeline</button>
+      </div>
+      <div id="name-error"></div>
+    </div>
+  </div>
+
+  <div id="loading-screen" style="display:none">
+    <div class="loading">
+      <div class="spinner"></div>
+      <span id="loading-msg">Scanning Spark Studio…</span>
+    </div>
+  </div>
+
+  <div id="results-screen" style="display:none">
+    <div class="results-header">
+      <div>
+        <h2 id="results-name"></h2>
+        <p>Assignee tasks + timeline deadlines · Spark Studio</p>
+      </div>
+      <button class="btn-ghost" onclick="resetView()">↩ Switch</button>
+    </div>
+    <div class="stats-row" id="stats-row"></div>
+    <div id="results-list"></div>
+  </div>
+
+</div>
+
+<script>
+const NOTION_MCP = "https://mcp.notion.com/mcp";
+
+const loadingMsgs = [
+  "Scanning Spark Studio…",
+  "Reading ticket assignments…",
+  "Checking timeline deadlines…",
+  "Sorting by due date…"
+];
+
+let loadingInterval;
+
+function cycleLoading() {
+  let i = 0;
+  loadingInterval = setInterval(() => {
+    i = (i + 1) % loadingMsgs.length;
+    const el = document.getElementById('loading-msg');
+    if (el) el.textContent = loadingMsgs[i];
+  }, 1800);
+}
+
+function resetView() {
+  clearInterval(loadingInterval);
+  document.getElementById('name-screen').style.display = '';
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('name-input').value = '';
+  document.getElementById('name-error').innerHTML = '';
+}
+
+async function callClaude(messages, system) {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1000,
+      system,
+      messages,
+      mcp_servers: [{ type: "url", url: NOTION_MCP, name: "notion" }]
+    })
+  });
+  if (!res.ok) throw new Error("API error " + res.status);
+  return res.json();
+}
+
+function extractJSON(data) {
+  if (!data.content) return null;
+  const texts = data.content.filter(b => b.type === "text").map(b => b.text).join("\n");
+  const clean = texts.replace(/```json|```/g, '').trim();
+  try { return JSON.parse(clean); } catch { return null; }
+}
+
+function parseDate(str) {
+  if (!str) return null;
+  const m = str.match(/([A-Za-z]+ \d{1,2}(?:,? \d{4})?|\d{1,2}\/\d{1,2}(?:\/\d{2,4})?)/);
+  if (!m) return null;
+  const d = new Date(m[1]);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function fmt(d) {
+  if (!d) return '';
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function rel(d) {
+  if (!d) return '';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff = Math.round((d - today) / 86400000);
+  if (diff < 0) return `${Math.abs(diff)}d overdue`;
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Tomorrow';
+  return `${diff}d`;
+}
+
+function relClass(d) {
+  if (!d) return '';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff = Math.round((d - today) / 86400000);
+  if (diff < 0) return 'overdue';
+  if (diff <= 3) return 'soon';
+  return '';
+}
+
+function daysUntil(d) {
+  if (!d) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  return Math.round((d - today) / 86400000);
+}
+
+async function loadPipeline() {
+  const name = document.getElementById('name-input').value.trim();
+  if (!name) return;
+
+  document.getElementById('name-screen').style.display = 'none';
+  document.getElementById('loading-screen').style.display = '';
+  document.getElementById('name-error').innerHTML = '';
+  document.getElementById('load-btn').disabled = true;
+  cycleLoading();
+
+  try {
+    const [d1, d2] = await Promise.all([
+      callClaude([{ role: "user", content: `Search the Notion workspace for the Spark Studio database (it may be called "Spark Studio" or "WIP Themes"). Find all pages where the Assignee property contains "${name}" OR the Owner property contains "${name}". For each matching page return a JSON array of objects with: id, url, name (page title), publishDate, taskDueDate, status, ready, assignee (array of names), owner (array of names). Return ONLY valid JSON, no markdown fences, no explanation.` }],
+        "Return only valid JSON arrays. No markdown, no explanation."),
+      callClaude([{ role: "user", content: `Search the Notion workspace Spark Studio database. For every page that has a "Timeline + Assignments" checklist section in its body, look for checklist lines that mention "${name}" with a date. Examples: "Fresh takes ETA: Thursday 6/15 by ${name}", "Editing: Wednesday 6/24 by ${name}". For each match extract: id, url, name (page title), task (label like "Fresh takes ETA"), dateStr (the date string found). Return ONLY valid JSON array, no markdown, no explanation.` }],
+        "Return only valid JSON arrays. No markdown, no explanation.")
+    ]);
+
+    const assigneePages = extractJSON(d1) || [];
+    const timelineItems = extractJSON(d2) || [];
+
+    clearInterval(loadingInterval);
+    renderResults(name, assigneePages, timelineItems);
+
+  } catch(err) {
+    clearInterval(loadingInterval);
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('name-screen').style.display = '';
+    document.getElementById('load-btn').disabled = false;
+    document.getElementById('name-error').innerHTML = `<div class="error-box">Couldn't connect to Notion. Check your connection and try again.</div>`;
+  }
+}
+
+function renderResults(name, assigneePages, timelineItems) {
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('results-screen').style.display = '';
+
+  document.getElementById('results-name').textContent = name.split(' ')[0] + "'s pipeline";
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const allItems = [];
+
+  assigneePages.forEach(p => {
+    const due = parseDate(p.taskDueDate) || parseDate(p.publishDate);
+    allItems.push({
+      id: p.id, url: p.url, name: p.name,
+      stage: p.ready || p.status || '',
+      due, publishDate: parseDate(p.publishDate),
+      source: 'assignee', timelineTasks: []
+    });
+  });
+
+  timelineItems.forEach(t => {
+    const date = parseDate(t.dateStr);
+    const existing = allItems.find(a => a.id === t.id);
+    if (existing) {
+      existing.timelineTasks.push({ task: t.task, date, dateStr: t.dateStr });
+    } else {
+      allItems.push({
+        id: t.id, url: t.url, name: t.name,
+        stage: t.task || '',
+        due: date, publishDate: null,
+        source: 'timeline', timelineTasks: []
+      });
+    }
+  });
+
+  allItems.sort((a, b) => {
+    if (!a.due && !b.due) return 0;
+    if (!a.due) return 1;
+    if (!b.due) return -1;
+    return a.due - b.due;
+  });
+
+  const overdue = allItems.filter(i => i.due && i.due < today);
+  const thisWeek = allItems.filter(i => { const d = daysUntil(i.due); return d !== null && d >= 0 && d <= 7; });
+  const next30 = allItems.filter(i => { const d = daysUntil(i.due); return d !== null && d > 7 && d <= 30; });
+  const further = allItems.filter(i => !i.due || daysUntil(i.due) > 30);
+
+  const statsEl = document.getElementById('stats-row');
+  statsEl.innerHTML = `
+    <div class="stat"><div class="stat-num">${allItems.length}</div><div class="stat-label">Total items</div></div>
+    <div class="stat"><div class="stat-num">${overdue.length}</div><div class="stat-label">Overdue</div></div>
+    <div class="stat"><div class="stat-num">${thisWeek.length}</div><div class="stat-label">This week</div></div>
+    <div class="stat"><div class="stat-num">${assigneePages.length}</div><div class="stat-label">Assigned</div></div>
+  `;
+
+  const listEl = document.getElementById('results-list');
+  listEl.innerHTML = '';
+
+  if (!allItems.length) {
+    listEl.innerHTML = '<p class="empty">No items found. Make sure your name matches Notion exactly — first, middle (if used), and last.</p>';
+    return;
+  }
+
+  function renderGroup(items, label) {
+    if (!items.length) return;
+    const wrap = document.createElement('div');
+    const head = document.createElement('div');
+    head.className = 'section-head';
+    head.textContent = label;
+    wrap.appendChild(head);
+
+    items.forEach(item => {
+      const rc = relClass(item.due);
+      const card = document.createElement('a');
+      card.className = 'ticket';
+      card.href = item.url || '#';
+      if (item.url) card.target = '_blank';
+
+      const tlHTML = item.timelineTasks.length
+        ? `<div class="timeline-tasks">${item.timelineTasks.map(t =>
+            `<div class="tl-item"><div class="tl-dot"></div>${t.task}: ${t.date ? fmt(t.date) : t.dateStr}</div>`
+          ).join('')}</div>`
+        : '';
+
+      card.innerHTML = `
+        <div class="date-block">
+          <div class="date-pub">${item.publishDate ? fmt(item.publishDate) : ''}</div>
+          <div class="date-due ${rc}">${item.due ? fmt(item.due) : '—'}</div>
+          <div class="date-rel ${rc}">${rel(item.due)}</div>
+        </div>
+        <div class="vr"></div>
+        <div class="ticket-body">
+          <div class="ticket-name">${item.name || '—'}</div>
+          ${item.stage ? `<div class="ticket-stage">${item.stage}</div>` : ''}
+          ${tlHTML}
+          <span class="badge ${item.source === 'assignee' ? 'badge-assigned' : 'badge-timeline'}">
+            ${item.source === 'assignee' ? '● Assigned to you' : '◆ Timeline deadline'}
+          </span>
+        </div>
+        ${item.url ? `<a class="ext-link" href="${item.url}" target="_blank" onclick="event.stopPropagation()" aria-label="Open in Notion">↗</a>` : ''}
+      `;
+      wrap.appendChild(card);
+    });
+
+    listEl.appendChild(wrap);
+  }
+
+  if (overdue.length) renderGroup(overdue, 'Overdue');
+  renderGroup(thisWeek, 'This week');
+  renderGroup(next30, 'Next 30 days');
+  renderGroup(further, 'Further out');
+}
+
+document.getElementById('name-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') loadPipeline();
+});
+</script>
+</body>
+</html>
