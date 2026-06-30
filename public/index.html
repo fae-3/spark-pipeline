@@ -7,86 +7,115 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #ffffff; --bg-s: #f7f6f3; --text: #1a1a1a; --text-s: #6b6860; --text-t: #9e9b96;
-    --border: rgba(0,0,0,0.1); --border-m: rgba(0,0,0,0.15);
-    --accent: #e8623a; --blue-bg: #edf3fc; --blue-t: #1a4fa0;
-    --green-bg: #edf7f0; --green-t: #1a6b38;
-    --amber-t: #8a5c0a; --red-bg: #fef0ee; --red-t: #a32020;
-    --r: 10px; --rs: 6px;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #1f1e1c; --bg-s: #2a2927; --text: #f0ede8; --text-s: #9e9b96; --text-t: #6b6860;
-      --border: rgba(255,255,255,0.1); --border-m: rgba(255,255,255,0.15);
-      --blue-bg: #0e1e38; --blue-t: #7aabf0; --green-bg: #0d2318; --green-t: #6bcf91;
-      --amber-t: #f0c060; --red-bg: #2a0e0e; --red-t: #f08080;
-    }
+    --bg: #1a1a18; --bg-s: #242422; --bg-t: #2e2e2c;
+    --text: #f0ede8; --text-s: #9e9b96; --text-t: #6b6860;
+    --border: rgba(255,255,255,0.08); --border-m: rgba(255,255,255,0.13);
+    --accent: #e8623a; --accent-dim: rgba(232,98,58,0.15);
+    --blue-bg: #0e1e38; --blue-t: #7aabf0;
+    --green-bg: #0d2318; --green-t: #6bcf91;
+    --amber-t: #f0c060; --red-bg: #2a0e0e; --red-t: #f08080;
+    --r: 12px; --rs: 7px;
   }
   html, body { font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; min-height: 100vh; }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
-  .topbar { display: flex; align-items: center; gap: 10px; margin-bottom: 2rem; }
-  .topbar h1 { font-size: 16px; font-weight: 600; color: var(--text); }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
+
+  /* TOP BAR */
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.75rem; }
+  .topbar-left { display: flex; align-items: center; gap: 8px; }
+  .topbar h1 { font-size: 15px; font-weight: 600; color: var(--text); }
   .topbar span { font-size: 13px; color: var(--text-t); }
-  .card { background: var(--bg-s); border: 0.5px solid var(--border); border-radius: var(--r); padding: 1.5rem; margin-bottom: 1.5rem; }
-  .card p { font-size: 13px; color: var(--text-s); margin-bottom: 1rem; line-height: 1.6; }
+  .user-pill { display: flex; align-items: center; gap: 6px; background: var(--bg-s); border: 0.5px solid var(--border-m); border-radius: 999px; padding: 4px 10px 4px 8px; font-size: 12px; color: var(--text-s); cursor: pointer; }
+  .user-pill:hover { background: var(--bg-t); }
+  .user-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+
+  /* NAME SCREEN */
+  .card { background: var(--bg-s); border: 0.5px solid var(--border); border-radius: var(--r); padding: 1.5rem; }
+  .card h2 { font-size: 16px; font-weight: 500; margin-bottom: 6px; }
+  .card p { font-size: 13px; color: var(--text-s); margin-bottom: 1.25rem; line-height: 1.6; }
   .irow { display: flex; gap: 8px; }
-  .irow input { flex: 1; height: 36px; padding: 0 12px; border: 0.5px solid var(--border-m); border-radius: var(--rs); background: var(--bg); color: var(--text); font-size: 14px; font-family: inherit; outline: none; }
-  .irow input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(232,98,58,0.12); }
+  .irow input { flex: 1; height: 38px; padding: 0 12px; border: 0.5px solid var(--border-m); border-radius: var(--rs); background: var(--bg-t); color: var(--text); font-size: 14px; font-family: inherit; outline: none; }
+  .irow input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
   .irow input::placeholder { color: var(--text-t); }
-  button { height: 36px; padding: 0 16px; border-radius: var(--rs); border: none; background: var(--accent); color: #fff; font-size: 13px; font-weight: 500; font-family: inherit; cursor: pointer; }
+  button { height: 38px; padding: 0 16px; border-radius: var(--rs); border: none; background: var(--accent); color: #fff; font-size: 13px; font-weight: 500; font-family: inherit; cursor: pointer; transition: opacity 0.15s; }
   button:hover { opacity: 0.88; }
-  button:disabled { opacity: 0.5; cursor: not-allowed; }
-  .ghost { background: none; border: 0.5px solid var(--border-m); color: var(--text-s); font-size: 12px; height: 30px; padding: 0 12px; }
-  .ghost:hover { background: var(--bg-s); opacity: 1; }
-  .loading { display: flex; align-items: center; gap: 10px; padding: 2rem 0; color: var(--text-s); font-size: 13px; }
-  .spin { width: 16px; height: 16px; border: 1.5px solid var(--border-m); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  /* LOADING */
+  .loading { display: flex; align-items: center; gap: 10px; padding: 2.5rem 0; color: var(--text-s); font-size: 13px; }
+  .spin { width: 16px; height: 16px; border: 1.5px solid var(--border-m); border-top-color: var(--accent); border-radius: 50%; animation: sp 0.7s linear infinite; flex-shrink: 0; }
+  @keyframes sp { to { transform: rotate(360deg); } }
   .errbox { background: var(--red-bg); color: var(--red-t); border-radius: var(--rs); padding: 10px 14px; font-size: 13px; margin-top: 10px; }
-  .rhdr { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 1.25rem; flex-wrap: wrap; }
-  .rhdr h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; color: var(--text); }
-  .rhdr p { font-size: 12px; color: var(--text-t); margin-top: 2px; }
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 1.5rem; }
-  .stat { background: var(--bg-s); border-radius: var(--rs); padding: 10px 12px; }
-  .stat-n { font-size: 20px; font-weight: 600; color: var(--text); }
+
+  /* STATS */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 1.25rem; }
+  .stat { background: var(--bg-s); border-radius: var(--rs); padding: 10px 12px; cursor: pointer; border: 0.5px solid transparent; transition: border-color 0.12s; }
+  .stat:hover { border-color: var(--border-m); }
+  .stat.active { border-color: var(--accent); background: var(--accent-dim); }
+  .stat-n { font-size: 22px; font-weight: 600; color: var(--text); letter-spacing: -0.02em; }
+  .stat-n.red { color: var(--red-t); }
+  .stat-n.amber { color: var(--amber-t); }
   .stat-l { font-size: 11px; color: var(--text-t); margin-top: 1px; }
-  .sec { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-t); margin: 1.5rem 0 0.6rem; }
-  .ticket { display: flex; align-items: flex-start; gap: 12px; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--r); padding: 12px 14px; margin-bottom: 6px; text-decoration: none; color: inherit; transition: border-color 0.12s; }
-  .ticket:hover { border-color: var(--border-m); background: var(--bg-s); }
-  .dc { min-width: 64px; text-align: right; flex-shrink: 0; }
-  .dpub { font-size: 11px; color: var(--text-t); }
+
+  /* TABS */
+  .tabs { display: flex; gap: 4px; margin-bottom: 1.25rem; background: var(--bg-s); border-radius: var(--rs); padding: 4px; }
+  .tab { flex: 1; height: 32px; border-radius: 5px; border: none; background: none; color: var(--text-s); font-size: 13px; font-weight: 500; font-family: inherit; cursor: pointer; transition: all 0.12s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .tab:hover { color: var(--text); background: var(--bg-t); opacity: 1; }
+  .tab.active { background: var(--bg-t); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+  .tab-count { font-size: 11px; background: var(--bg); color: var(--text-t); border-radius: 999px; padding: 1px 6px; }
+  .tab.active .tab-count { background: var(--accent-dim); color: var(--accent); }
+
+  /* TICKETS */
+  .ticket-list { display: flex; flex-direction: column; gap: 6px; }
+  .ticket { display: flex; align-items: flex-start; gap: 12px; background: var(--bg-s); border: 0.5px solid var(--border); border-radius: var(--r); padding: 12px 14px; text-decoration: none; color: inherit; transition: border-color 0.12s, background 0.12s; }
+  .ticket:hover { border-color: var(--border-m); background: var(--bg-t); }
+  .dc { min-width: 56px; text-align: right; flex-shrink: 0; }
+  .dpub { font-size: 10px; color: var(--text-t); }
   .ddue { font-size: 13px; font-weight: 600; color: var(--text); margin-top: 1px; }
   .ddue.ov { color: var(--red-t); } .ddue.sn { color: var(--amber-t); }
-  .drel { font-size: 11px; color: var(--text-t); margin-top: 1px; }
-  .drel.ov { color: var(--red-t); } .drel.sn { color: var(--amber-t); }
+  .dr { font-size: 11px; color: var(--text-t); margin-top: 1px; }
+  .dr.ov { color: var(--red-t); } .dr.sn { color: var(--amber-t); }
   .vr { width: 1px; background: var(--border); align-self: stretch; flex-shrink: 0; }
   .tb { flex: 1; min-width: 0; }
   .tn { font-size: 14px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .ts { font-size: 12px; color: var(--text-s); margin-top: 2px; }
-  .tls { margin-top: 6px; }
+  .tls { margin-top: 5px; }
   .tli { font-size: 12px; color: var(--text-s); display: flex; align-items: center; gap: 5px; margin-top: 3px; }
   .tld { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
-  .badge { display: inline-flex; font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 999px; margin-top: 6px; }
+  .badge { display: inline-flex; font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 999px; margin-top: 5px; }
   .ba { background: var(--blue-bg); color: var(--blue-t); }
   .bt { background: var(--green-bg); color: var(--green-t); }
-  .ext { font-size: 13px; color: var(--text-t); text-decoration: none; flex-shrink: 0; align-self: center; }
+  .ext { font-size: 13px; color: var(--text-t); flex-shrink: 0; align-self: center; text-decoration: none; padding: 4px; }
   .ext:hover { color: var(--accent); }
-  .empty { padding: 2rem 0; color: var(--text-s); font-size: 13px; line-height: 1.7; }
-  @media (max-width: 480px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+  .empty { padding: 2.5rem 0; color: var(--text-s); font-size: 13px; text-align: center; }
+  .empty-icon { font-size: 28px; margin-bottom: 8px; }
+
+  @media (max-width: 480px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .tab-count { display: none; }
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="topbar">
-    <span style="font-size:22px">🦀</span>
-    <h1>Spark Studio</h1>
-    <span>/ My Pipeline</span>
+    <div class="topbar-left">
+      <span style="font-size:20px">🦀</span>
+      <h1>Spark Studio</h1>
+      <span>/ My Pipeline</span>
+    </div>
+    <div id="UP" style="display:none" class="user-pill" onclick="switchUser()">
+      <div class="user-dot"></div>
+      <span id="UN"></span>
+      <span style="color:var(--text-t)">↩</span>
+    </div>
   </div>
 
   <div id="NS">
     <div class="card">
-      <p>Enter your name exactly as it appears in Notion to see your active assignments and upcoming timeline deadlines.</p>
+      <h2>Who are you? 👋</h2>
+      <p>Enter your first name to see your assignments and upcoming timeline deadlines from Spark Studio.</p>
       <div class="irow">
-        <input type="text" id="NI" placeholder="e.g. Hayley Igarashi" autocomplete="off" />
+        <input type="text" id="NI" placeholder="e.g. Hayley" autocomplete="off" />
         <button id="LB" onclick="go()">Load my pipeline</button>
       </div>
       <div id="NE"></div>
@@ -98,60 +127,57 @@
   </div>
 
   <div id="RS" style="display:none">
-    <div class="rhdr">
-      <div><h2 id="RN"></h2><p>Assignee tasks + timeline deadlines · Spark Studio</p></div>
-      <button class="ghost" onclick="rst()">↩ Switch</button>
-    </div>
     <div class="stats" id="ST"></div>
-    <div id="RL"></div>
+    <div class="tabs" id="TB"></div>
+    <div class="ticket-list" id="RL"></div>
   </div>
 </div>
 
 <script>
-const MSGS=["Scanning Spark Studio…","Reading assignments…","Checking timeline deadlines…","Sorting by due date…"];
-let LI;
+const MSGS=["Scanning Spark Studio…","Reading assignments…","Checking timeline deadlines…","Sorting by date…"];
+let LI, ALL_ITEMS=[], CUR_TAB='today';
 
-function rst(){
+function switchUser(){
   clearInterval(LI);
+  localStorage.removeItem('pipeline_name');
   document.getElementById('NS').style.display='';
   document.getElementById('RS').style.display='none';
-  document.getElementById('LS').style.display='none';
+  document.getElementById('UP').style.display='none';
   document.getElementById('NI').value='';
   document.getElementById('NE').innerHTML='';
 }
 
-async function nf(path, method, body) {
-  const opts = { method: method||'GET', headers: {'Content-Type':'application/json'} };
-  if (body) opts.body = JSON.stringify(body);
-  const r = await fetch('/api/notion?path=' + encodeURIComponent(path), opts);
+async function nf(path,method,body){
+  const opts={method:method||'GET',headers:{'Content-Type':'application/json'}};
+  if(body)opts.body=JSON.stringify(body);
+  const r=await fetch('/api/notion?path='+encodeURIComponent(path),opts);
   return r.json();
 }
 
-async function allPgs(id) {
-  let pg=[], cur, hm=true;
-  while(hm) {
-    const b={page_size:100};
-    if(cur) b.start_cursor=cur;
+async function allPgs(id){
+  let pg=[],cur,hm=true;
+  while(hm){
+    const b={page_size:100};if(cur)b.start_cursor=cur;
     const d=await nf('/v1/databases/'+id+'/query','POST',b);
-    if(d.results) pg=pg.concat(d.results);
-    hm=d.has_more; cur=d.next_cursor;
+    if(d.results)pg=pg.concat(d.results);
+    hm=d.has_more;cur=d.next_cursor;
   }
   return pg;
 }
 
-function gp(p) {
-  if(!p) return '';
-  if(p.type==='title') return (p.title||[]).map(t=>t.plain_text).join('');
-  if(p.type==='rich_text') return (p.rich_text||[]).map(t=>t.plain_text).join('');
-  if(p.type==='date') return p.date&&p.date.start||'';
-  if(p.type==='select') return p.select&&p.select.name||'';
-  if(p.type==='status') return p.status&&p.status.name||'';
-  if(p.type==='people') return (p.people||[]).map(p=>p.name||'').join(', ');
-  return '';
+function gp(p){
+  if(!p)return'';
+  if(p.type==='title')return(p.title||[]).map(t=>t.plain_text).join('');
+  if(p.type==='rich_text')return(p.rich_text||[]).map(t=>t.plain_text).join('');
+  if(p.type==='date')return p.date&&p.date.start||'';
+  if(p.type==='select')return p.select&&p.select.name||'';
+  if(p.type==='status')return p.status&&p.status.name||'';
+  if(p.type==='people')return(p.people||[]).map(p=>p.name||'').join(', ');
+  return'';
 }
 
-function pd(s) {
-  if(!s) return null;
+function pd(s){
+  if(!s)return null;
   let m=s.match(/(\d{4}-\d{2}-\d{2})/);
   if(m){const d=new Date(m[1]);if(!isNaN(d))return d;}
   m=s.match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?/);
@@ -164,27 +190,81 @@ function pd(s) {
 function fmt(d){return d?d.toLocaleDateString('en-US',{month:'short',day:'numeric'}):''}
 function du(d){if(!d)return null;const t=new Date();t.setHours(0,0,0,0);return Math.round((d-t)/86400000);}
 function rs(d){const n=du(d);if(n===null)return'';if(n<0)return Math.abs(n)+'d overdue';if(n===0)return'Today';if(n===1)return'Tomorrow';return n+'d';}
-function rc(d){const n=du(d);if(n===null)return'';if(n<0)return'ov';if(n<=3)return'sn';return'';}
+function rc(d){const n=du(d);if(n===null)return'';if(n<0)return'ov';if(n<=2)return'sn';return'';}
 
-async function go() {
+function tabItems(tab){
+  return ALL_ITEMS.filter(i=>{
+    const n=du(i.due);
+    if(tab==='today') return n!==null&&n<=0; // overdue + today
+    if(tab==='week') return n!==null&&n>0&&n<=7;
+    if(tab==='future') return !i.due||n>7;
+    return true;
+  });
+}
+
+function renderTabs(){
+  const tabs=[
+    {id:'today',label:'Today & Overdue'},
+    {id:'week',label:'This Week'},
+    {id:'future',label:'Future'}
+  ];
+  const tb=document.getElementById('TB');
+  tb.innerHTML='';
+  tabs.forEach(t=>{
+    const count=tabItems(t.id).length;
+    const btn=document.createElement('button');
+    btn.className='tab'+(CUR_TAB===t.id?' active':'');
+    btn.innerHTML=t.label+'<span class="tab-count">'+count+'</span>';
+    btn.onclick=()=>{CUR_TAB=t.id;renderTabs();renderList();};
+    tb.appendChild(btn);
+  });
+}
+
+function renderList(){
+  const items=tabItems(CUR_TAB);
+  const rl=document.getElementById('RL');
+  rl.innerHTML='';
+  if(!items.length){
+    const msgs={today:'Nothing overdue or due today 🎉',week:'Nothing due this week!',future:'Nothing further out yet.'};
+    rl.innerHTML='<div class="empty"><div class="empty-icon">'+(CUR_TAB==='today'?'✅':CUR_TAB==='week'?'📅':'🔭')+'</div>'+msgs[CUR_TAB]+'</div>';
+    return;
+  }
+  items.forEach(item=>{
+    const cls=rc(item.due);
+    const tlH=item.tl.length?'<div class="tls">'+item.tl.map(t=>'<div class="tli"><div class="tld"></div>'+t.task+': '+(t.date?fmt(t.date):t.dateStr)+'</div>').join('')+'</div>':'';
+    const c=document.createElement('a');
+    c.className='ticket';c.href=item.url||'#';if(item.url)c.target='_blank';
+    c.innerHTML='<div class="dc"><div class="dpub">'+(item.pub?fmt(item.pub):'')+'</div><div class="ddue '+cls+'">'+(item.due?fmt(item.due):'—')+'</div><div class="dr '+cls+'">'+rs(item.due)+'</div></div><div class="vr"></div><div class="tb"><div class="tn">'+(item.name||'—')+'</div>'+(item.stage?'<div class="ts">'+item.stage+'</div>':'')+tlH+'<span class="badge '+(item.src==='a'?'ba':'bt')+'">'+(item.src==='a'?'Assigned to you':'Timeline deadline')+'</span></div>'+(item.url?'<a class="ext" href="'+item.url+'" target="_blank" onclick="event.stopPropagation()">↗</a>':'');
+    rl.appendChild(c);
+  });
+}
+
+async function go(){
   const name=document.getElementById('NI').value.trim();
-  if(!name) return;
+  if(!name)return;
+  localStorage.setItem('pipeline_name',name);
+  loadPipeline(name);
+}
+
+async function loadPipeline(name){
   document.getElementById('NS').style.display='none';
   document.getElementById('LS').style.display='';
   document.getElementById('NE').innerHTML='';
   document.getElementById('LB').disabled=true;
+  document.getElementById('UP').style.display='none';
   let mi=0;
   LI=setInterval(()=>{mi=(mi+1)%MSGS.length;const el=document.getElementById('LM');if(el)el.textContent=MSGS[mi];},1800);
 
-  try {
+  try{
     const sr=await nf('/v1/search','POST',{query:'Spark Studio',filter:{value:'database',property:'object'}});
     const db=sr.results&&sr.results.find(r=>r.object==='database');
-    if(!db) throw new Error("Spark Studio database not found.");
+    if(!db)throw new Error("Spark Studio database not found.");
     const pages=await allPgs(db.id);
-    const nl=name.toLowerCase(),nfirst=name.split(' ')[0].toLowerCase();
+    const nfirst=name.split(' ')[0].toLowerCase();
+    const nl=name.toLowerCase();
     const aP=[],tlI=[],shippedIds=new Set();
 
-    for(const page of pages) {
+    for(const page of pages){
       const pr=page.properties||{};
       const tp=Object.values(pr).find(p=>p.type==='title');
       const title=gp(tp)||'Untitled';
@@ -193,22 +273,23 @@ async function go() {
       const tdd=gp(pr['Task Due Date']||pr['Task due date']||pr['task_due_date']||null);
       const stat=gp(pr['Status']||pr['status']||null);
       const rdy=gp(pr['Ready']||pr['ready']||null);
-      if(stat.toLowerCase()==='shipped') { shippedIds.add(page.id); continue; }
+      if(stat.toLowerCase()==='shipped'){shippedIds.add(page.id);continue;}
       if(asgn.includes(nl)||asgn.includes(nfirst))
         aP.push({id:page.id,url:page.url,name:title,pub,tdd,stat,rdy});
     }
 
     document.getElementById('LM').textContent="Checking timeline deadlines…";
 
-    for(const page of pages) {
-      try {
+    for(const page of pages){
+      try{
+        if(shippedIds.has(page.id))continue;
         const bl=await nf('/v1/blocks/'+page.id+'/children?page_size=100');
-        if(!bl.results) continue;
+        if(!bl.results)continue;
         const pr=page.properties||{};
         const tp=Object.values(pr).find(p=>p.type==='title');
         const title=gp(tp)||'Untitled';
         let inTl=false;
-        for(const b of bl.results) {
+        for(const b of bl.results){
           const bt=b.type;if(!b[bt])continue;
           const text=(b[bt].rich_text||[]).map(t=>t.plain_text).join('');
           const tl=text.toLowerCase();
@@ -222,12 +303,49 @@ async function go() {
             }
           }
         }
-      } catch(e){}
+      }catch(e){}
     }
 
     clearInterval(LI);
-    draw(name,aP,tlI);
-  } catch(err) {
+
+    const today=new Date();today.setHours(0,0,0,0);
+    ALL_ITEMS=[];
+
+    aP.forEach(p=>{
+      const due=pd(p.tdd)||pd(p.pub);
+      ALL_ITEMS.push({id:p.id,url:p.url,name:p.name,stage:p.rdy||p.stat||'',due,pub:pd(p.pub),src:'a',tl:[]});
+    });
+
+    tlI.forEach(t=>{
+      const date=pd(t.dateStr);
+      const ex=ALL_ITEMS.find(a=>a.id===t.id);
+      if(ex){ex.tl.push({task:t.task,date,dateStr:t.dateStr});}
+      else{ALL_ITEMS.push({id:t.id,url:t.url,name:t.name,stage:t.task||'',due:date,pub:null,src:'t',tl:[]});}
+    });
+
+    ALL_ITEMS.sort((a,b)=>{if(!a.due&&!b.due)return 0;if(!a.due)return 1;if(!b.due)return -1;return a.due-b.due;});
+
+    const ov=ALL_ITEMS.filter(i=>i.due&&du(i.due)<=0).length;
+    const wk=ALL_ITEMS.filter(i=>{const d=du(i.due);return d!==null&&d>0&&d<=7;}).length;
+    const ft=ALL_ITEMS.filter(i=>!i.due||du(i.due)>7).length;
+
+    document.getElementById('ST').innerHTML=
+      '<div class="stat'+(CUR_TAB==='today'?' active':'')+'" onclick="setTab(\'today\')"><div class="stat-n red">'+ov+'</div><div class="stat-l">Today & overdue</div></div>'+
+      '<div class="stat'+(CUR_TAB==='week'?' active':'')+'" onclick="setTab(\'week\')"><div class="stat-n amber">'+wk+'</div><div class="stat-l">This week</div></div>'+
+      '<div class="stat'+(CUR_TAB==='future'?' active':'')+'" onclick="setTab(\'future\')"><div class="stat-n">'+ft+'</div><div class="stat-l">Future</div></div>'+
+      '<div class="stat" style="cursor:default"><div class="stat-n">'+ALL_ITEMS.length+'</div><div class="stat-l">Total</div></div>';
+
+    document.getElementById('UN').textContent=name.split(' ')[0];
+    document.getElementById('UP').style.display='flex';
+    document.getElementById('LS').style.display='none';
+    document.getElementById('RS').style.display='';
+    document.getElementById('LB').disabled=false;
+
+    CUR_TAB='today';
+    renderTabs();
+    renderList();
+
+  }catch(err){
     clearInterval(LI);
     document.getElementById('LS').style.display='none';
     document.getElementById('NS').style.display='';
@@ -236,40 +354,11 @@ async function go() {
   }
 }
 
-function draw(name,aP,tlI) {
-  document.getElementById('LS').style.display='none';
-  document.getElementById('RS').style.display='';
-  document.getElementById('RN').textContent=name.split(' ')[0]+"'s pipeline";
-  const today=new Date();today.setHours(0,0,0,0);
-  const all=[];
-  aP.forEach(p=>{const due=pd(p.tdd)||pd(p.pub);all.push({id:p.id,url:p.url,name:p.name,stage:p.rdy||p.stat||'',due,pub:pd(p.pub),src:'a',tl:[]});});
-  tlI.forEach(t=>{const date=pd(t.dateStr);const ex=all.find(a=>a.id===t.id);if(ex){ex.tl.push({task:t.task,date,dateStr:t.dateStr});}else{all.push({id:t.id,url:t.url,name:t.name,stage:t.task||'',due:date,pub:null,src:'t',tl:[]});}});
-  all.sort((a,b)=>{if(!a.due&&!b.due)return 0;if(!a.due)return 1;if(!b.due)return -1;return a.due-b.due;});
-  const ov=all.filter(i=>i.due&&i.due<today);
-  const wk=all.filter(i=>{const d=du(i.due);return d!==null&&d>=0&&d<=7;});
-  const mo=all.filter(i=>{const d=du(i.due);return d!==null&&d>7&&d<=30;});
-  const ft=all.filter(i=>!i.due||du(i.due)>30);
-  document.getElementById('ST').innerHTML='<div class="stat"><div class="stat-n">'+all.length+'</div><div class="stat-l">Total</div></div><div class="stat"><div class="stat-n">'+ov.length+'</div><div class="stat-l">Overdue</div></div><div class="stat"><div class="stat-n">'+wk.length+'</div><div class="stat-l">This week</div></div><div class="stat"><div class="stat-n">'+aP.length+'</div><div class="stat-l">Assigned</div></div>';
-  const rl=document.getElementById('RL');rl.innerHTML='';
-  if(!all.length){rl.innerHTML='<p class="empty">No items found. Make sure your name matches Notion exactly.</p>';return;}
-  function rg(items,label){
-    if(!items.length)return;
-    const w=document.createElement('div');
-    w.innerHTML='<div class="sec">'+label+'</div>';
-    items.forEach(item=>{
-      const cls=rc(item.due);
-      const tlH=item.tl.length?'<div class="tls">'+item.tl.map(t=>'<div class="tli"><div class="tld"></div>'+t.task+': '+(t.date?fmt(t.date):t.dateStr)+'</div>').join('')+'</div>':'';
-      const c=document.createElement('a');c.className='ticket';c.href=item.url||'#';if(item.url)c.target='_blank';
-      c.innerHTML='<div class="dc"><div class="dpub">'+(item.pub?fmt(item.pub):'')+'</div><div class="ddue '+cls+'">'+(item.due?fmt(item.due):'—')+'</div><div class="drel '+cls+'">'+rs(item.due)+'</div></div><div class="vr"></div><div class="tb"><div class="tn">'+(item.name||'—')+'</div>'+(item.stage?'<div class="ts">'+item.stage+'</div>':'')+tlH+'<span class="badge '+(item.src==='a'?'ba':'bt')+'">'+(item.src==='a'?'Assigned to you':'Timeline deadline')+'</span></div>'+(item.url?'<a class="ext" href="'+item.url+'" target="_blank" onclick="event.stopPropagation()">↗</a>':'');
-      w.appendChild(c);
-    });
-    rl.appendChild(w);
-  }
-  if(ov.length)rg(ov,'Overdue');
-  rg(wk,'This week');
-  rg(mo,'Next 30 days');
-  rg(ft,'Further out');
-}
+function setTab(t){CUR_TAB=t;renderTabs();renderList();}
+
+// Auto-load if name saved
+const saved=localStorage.getItem('pipeline_name');
+if(saved){document.getElementById('NI').value=saved;loadPipeline(saved);}
 
 document.getElementById('NI').addEventListener('keydown',e=>{if(e.key==='Enter')go();});
 </script>
