@@ -181,7 +181,7 @@ async function go() {
     const db=sr.results&&sr.results.find(r=>r.object==='database');
     if(!db) throw new Error("Spark Studio database not found.");
     const pages=await allPgs(db.id);
-    const nl=name.toLowerCase(),nf2=name.split(' ')[0].toLowerCase(),nl2=name.split(' ').slice(-1)[0].toLowerCase();
+    const nl=name.toLowerCase(),nfirst=name.split(' ')[0].toLowerCase();
     const aP=[],tlI=[],shippedIds=new Set();
 
     for(const page of pages) {
@@ -194,7 +194,7 @@ async function go() {
       const stat=gp(pr['Status']||pr['status']||null);
       const rdy=gp(pr['Ready']||pr['ready']||null);
       if(stat.toLowerCase()==='shipped') { shippedIds.add(page.id); continue; }
-      if(asgn.includes(nl)||asgn.includes(nf2)||asgn.includes(nl2))
+      if(asgn.includes(nl)||asgn.includes(nfirst))
         aP.push({id:page.id,url:page.url,name:title,pub,tdd,stat,rdy});
     }
 
@@ -214,7 +214,7 @@ async function go() {
           const tl=text.toLowerCase();
           if(tl.includes('timeline')&&tl.includes('assignment')){inTl=true;continue;}
           if(inTl){
-            const mn=[nl,nf2,nl2].some(v=>v.length>2&&tl.includes(v));
+            const mn=tl.includes(nfirst);
             if(mn){
               const dm=text.match(/(\d{1,2})\/(\d{1,2})(?:\/\d{2,4})?/);
               const tm=text.match(/^([^:]+):/);
