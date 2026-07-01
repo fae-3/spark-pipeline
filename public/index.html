@@ -180,7 +180,7 @@ function pd(s){
   if(!s)return null;
   let m=s.match(/(\d{4}-\d{2}-\d{2})/);
   if(m){const d=new Date(m[1]);if(!isNaN(d))return d;}
-  m=s.match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?/);
+  m=s.match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?(?!\d)/);
   if(m){const y=m[3]?(m[3].length===2?'20'+m[3]:m[3]):new Date().getFullYear();const d=new Date(y+'-'+m[1].padStart(2,'0')+'-'+m[2].padStart(2,'0'));if(!isNaN(d))return d;}
   m=s.match(/([A-Za-z]+ \d{1,2}(?:,? \d{4})?)/);
   if(m){const d=new Date(m[1]);if(!isNaN(d))return d;}
@@ -298,7 +298,7 @@ async function loadPipeline(name){
           if(inTl){
             const mn=tl.includes(nfirst);
             if(mn){
-              const dm=text.match(/(\d{1,2})\/(\d{1,2})(?:\/\d{2,4})?/);
+              const dm=text.match(/(\d{1,2})\/(\d{1,2})(?:\/\d{2,4})?(?!\d)/);
               const tm=text.match(/^([^:]+):/);
               if(!shippedIds.has(page.id))tlI.push({id:page.id,url:page.url,name:title,task:tm?tm[1].trim():'Task',dateStr:dm?dm[0]:''});
             }
