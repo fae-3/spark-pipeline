@@ -291,6 +291,7 @@ async function loadPipeline(name){
         let inTl=false;
         for(const b of bl.results){
           const bt=b.type;if(!b[bt])continue;
+          if(bt==='to_do'&&b[bt].checked===true)continue;
           const text=(b[bt].rich_text||[]).map(t=>t.plain_text).join('');
           const tl=text.toLowerCase();
           if(tl.includes('timeline')&&tl.includes('assignment')){inTl=true;continue;}
